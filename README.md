@@ -1,72 +1,59 @@
 AI Task Planning Agent
-An intelligent agent that helps with task planning by breaking down natural language goals into actionable steps, enriching them with external information, and providing a clear day-by-day plan.
 
-Architecture Overview
-Web Interface (HTML/JS) → Flask App → AI Task Planning Agent → Task Planner → APIs & SQLite DB → Web Plans Storage
+description: >
+    An intelligent agent that helps with task planning by breaking down natural language goals
+    into actionable steps, enriching them with external information, and providing a clear
+    day-by-day plan.
 
-How It Works
+architecture:
+  overview: "Web Interface (HTML/JS) → Flask App → AI Task Planning Agent → Task Planner → APIs & SQLite DB → Web Plans Storage"
 
-1)Goal Input:
-User enters a natural language goal.
+how_it_works:
+  - goal_input: "User enters a natural language goal."
+  - initial_planning: "LLM (GPT-3.5) breaks down the goal into structured steps."
+  - web_enrichment: "Each step is enriched with relevant web search results."
+  - weather_integration: "Location-based goals receive weather forecasts."
+  - plan_generation: "Complete plan is assembled with all information."
+  - database_storage: "Plan is saved to SQLite database for future reference."
+  - web_display: "Plan is presented in a user-friendly web interface."
 
-2)Initial Planning:
-LLM (GPT-3.5) breaks down the goal into structured steps.
+setup_instructions:
+  prerequisites:
+    - "Python 3.8 or higher"
+    - "API Keys for OpenAI API, SerpAPI, and OpenWeatherMap API"
+  installation:
+    steps:
+      - "Clone the repository: git clone <repository-url> && cd task-planning-agent"
+      - "Create a virtual environment: python -m venv venv"
+      - "Activate the virtual environment:"
+        windows: "venv\\Scripts\\activate"
+        mac_linux: "source venv/bin/activate"
+      - "Install dependencies: pip install -r requirements.txt"
+      - "Create a .env file with your API keys:"
+        content: |
+          OPENAI_API_KEY=your-openai-key
+          SERPAPI_KEY=your-serpapi-key
+          WEATHER_API_KEY=your-openweather-key
+      - "Run the application: python app.py"
+      - "Access the web interface: http://localhost:5000"
 
-3)Web Enrichment:
-Each step is enriched with relevant web search results.
+features:
+  - "Converts natural language goals into structured actionable plans."
+  - "Enriches each step with web search results and external information."
+  - "Integrates weather data for location-specific goals."
+  - "Stores generated plans in a SQLite database."
+  - "Presents plans in a clean and user-friendly web interface."
 
-4)Weather Integration:
-Location-based goals receive weather forecasts.
+technologies:
+  - "Python 3.8+"
+  - "Flask"
+  - "OpenAI GPT-3.5"
+  - "SerpAPI"
+  - "OpenWeatherMap API"
+  - "SQLite"
+  - "HTML/CSS/JavaScript"
 
-5)Plan Generation:
-Complete plan is assembled with all information.
-
-6)Database Storage:
-Plan is saved to SQLite database for future reference.
-
-7)Web Display:
-Plan is presented in a user-friendly web interface.
-
-## Setup Instructions
-
-### Prerequisites
-
-- Python 3.8 or higher
-- API Keys for:
-  - OpenAI API
-  - SerpAPI (for web search)
-  - OpenWeatherMap API
-
-
-Installation
-
-1) Clone the repository:
-
-git clone <your-repo-url>
-cd task-planning-agent
-
-2) Create virtual environment:
-
-python -m venv venv
-venv\Scripts\activate
-
-3) Install dependencies:
-
-pip install -r requirements.txt
-
-4) Create a .env file:
-
-OPENAI_API_KEY=openai-key-here
-SERPAPI_KEY=serpapi-key-here
-WEATHER_API_KEY=openweather-key-here
-
-5) Run the application:
-
-python app.py
-
-6) Access the web interface: Open your browser and go to 
-http://localhost:5000
-
+license: "MIT"
 
 📋 Example Goals and Generated Plans
 
