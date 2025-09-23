@@ -12,9 +12,9 @@ from dataclasses import dataclass, asdict
 from flask import Flask, render_template, request, jsonify
 import openai
 from serpapi import GoogleSearch
+import re
 
 # Configuration
-
 
 load_dotenv()
 
@@ -30,6 +30,7 @@ class PlanStep:
     title: str
     description: str
     estimated_time: str
+    day: int
     external_info: Optional[Dict] = None
 
 @dataclass
@@ -40,6 +41,7 @@ class Plan:
     weather_info: Optional[Dict]
     created_at: str
     total_duration: str
+    days_count: int
 
 class WebSearchTool:
     """Tool for web search using SerpAPI"""
@@ -171,7 +173,8 @@ class DatabaseManager:
                     steps TEXT NOT NULL,
                     weather_info TEXT,
                     created_at TEXT NOT NULL,
-                    total_duration TEXT
+                    total_duration TEXT,
+                    days_count INTEGER DEFAULT 1
                 )
             ''')
             conn.commit()
@@ -181,14 +184,15 @@ class DatabaseManager:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO plans (goal, steps, weather_info, created_at, total_duration)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO plans (goal, steps, weather_info, created_at, total_duration, days_count)
+                VALUES (?, ?, ?, ?, ?, ?)
             ''', (
                 plan.goal,
                 json.dumps([asdict(step) for step in plan.steps]),
                 json.dumps(plan.weather_info) if plan.weather_info else None,
                 plan.created_at,
-                plan.total_duration
+                plan.total_duration,
+                plan.days_count
             ))
             conn.commit()
             return cursor.lastrowid
@@ -215,7 +219,7 @@ class DatabaseManager:
     
     def _row_to_plan(self, row) -> Plan:
         """Convert database row to Plan object"""
-        id, goal, steps_json, weather_info_json, created_at, total_duration = row
+        id, goal, steps_json, weather_info_json, created_at, total_duration, days_count = row
         
         steps_data = json.loads(steps_json)
         steps = [PlanStep(**step_data) for step_data in steps_data]
@@ -228,7 +232,8 @@ class DatabaseManager:
             steps=steps,
             weather_info=weather_info,
             created_at=created_at,
-            total_duration=total_duration
+            total_duration=total_duration,
+            days_count=days_count or 1
         )
 
 class TaskPlanningAgent:
@@ -236,12 +241,13 @@ class TaskPlanningAgent:
     
     def __init__(self, config: Config):
         self.config = config
-        self.web_search = WebSearchTool(config.SERPAPI_KEY)
-        self.weather = WeatherTool(config.WEATHER_API_KEY)
+        self.web_search = WebSearchTool(config.SERPAPI_KEY) if config.SERPAPI_KEY else None
+        self.weather = WeatherTool(config.WEATHER_API_KEY) if config.WEATHER_API_KEY else None
         self.db = DatabaseManager(config.DATABASE_PATH)
         
         # Initialize OpenAI client
-        openai.api_key = config.OPENAI_API_KEY
+        if config.OPENAI_API_KEY:
+            openai.api_key = config.OPENAI_API_KEY
     
     def create_plan(self, goal: str) -> Plan:
         """Create a comprehensive plan for the given goal"""
@@ -254,7 +260,7 @@ class TaskPlanningAgent:
         enriched_steps = self._enrich_with_web_search(initial_plan["steps"], goal)
         
         # Step 3: Get weather information if location-based
-        weather_info = self._get_weather_info(goal)
+        weather_info = self._get_weather_info(goal, initial_plan.get("days_count", 1))
         
         # Step 4: Create final plan object
         plan = Plan(
@@ -263,7 +269,8 @@ class TaskPlanningAgent:
             steps=enriched_steps,
             weather_info=weather_info,
             created_at=datetime.now().isoformat(),
-            total_duration=initial_plan.get("total_duration", "Variable")
+            total_duration=initial_plan.get("total_duration", "Variable"),
+            days_count=initial_plan.get("days_count", 1)
         )
         
         # Step 5: Save to database
@@ -271,62 +278,145 @@ class TaskPlanningAgent:
         
         return plan
     
+    def _estimate_days_from_goal(self, goal: str) -> int:
+        """Estimate number of days based on goal keywords"""
+        goal_lower = goal.lower()
+        
+        # Look for explicit day mentions
+        day_patterns = [
+            r'(\d+)\s*day', r'(\d+)-day', r'day\s*(\d+)',
+            r'(\d+)\s*week', r'week\s*(\d+)'
+        ]
+        
+        for pattern in day_patterns:
+            match = re.search(pattern, goal_lower)
+            if match:
+                days = int(match.group(1))
+                if 'week' in pattern:
+                    days *= 7
+                return min(days, 7)  # Cap at 7 days
+        
+        # Estimate based on activity type
+        if any(word in goal_lower for word in ['tour', 'trip', 'visit', 'explore', 'vacation', 'holiday']):
+            return 3
+        elif any(word in goal_lower for word in ['weekend', 'quick', 'short']):
+            return 2
+        elif any(word in goal_lower for word in ['learn', 'course', 'training', 'workshop']):
+            return 5
+        else:
+            return 1
+    
     def _generate_initial_plan(self, goal: str) -> Dict:
         """Generate initial plan structure using LLM"""
+        days_count = self._estimate_days_from_goal(goal)
+        
         prompt = f"""
         Create a detailed step-by-step plan for the following goal: "{goal}"
         
+        The plan should be organized across {days_count} day(s). Each step should be practical and actionable.
+        
         Please provide:
-        1. A list of specific, actionable steps
+        1. A list of specific, actionable steps distributed across days
         2. Estimated time for each step
         3. Brief description of what each step involves
-        4. Total estimated duration
+        4. Which day each step belongs to
+        5. Total estimated duration
         
         Format your response as JSON with this structure:
         {{
+            "days_count": {days_count},
             "steps": [
                 {{
                     "step_number": 1,
                     "title": "Step title",
-                    "description": "Detailed description",
-                    "estimated_time": "X hours/minutes"
+                    "description": "Detailed description with specific recommendations",
+                    "estimated_time": "2 hours",
+                    "day": 1
                 }}
             ],
-            "total_duration": "X days/hours"
+            "total_duration": "{days_count} days"
         }}
+        
+        Make sure steps are distributed evenly across the {days_count} day(s) and include specific places, activities, or recommendations where relevant.
         """
         
         try:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a helpful planning assistant. Always respond with valid JSON."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7
-            )
-            
-            content = response.choices[0].message.content
-            return json.loads(content)
-            
+            if self.config.OPENAI_API_KEY:
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful planning assistant who creates detailed, day-by-day itineraries. Always respond with valid JSON and include specific recommendations."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7
+                )
+                
+                content = response.choices[0].message.content
+                return json.loads(content)
+            else:
+                # Fallback without OpenAI API
+                return self._generate_fallback_plan(goal, days_count)
+                
         except Exception as e:
             print(f"LLM error: {e}")
-            # Fallback plan
-            return {
-                "steps": [
+            return self._generate_fallback_plan(goal, days_count)
+    
+    def _generate_fallback_plan(self, goal: str, days_count: int) -> Dict:
+        """Generate a fallback plan when LLM is not available"""
+        steps = []
+        step_num = 1
+        
+        for day in range(1, days_count + 1):
+            if day == 1:
+                steps.extend([
                     {
-                        "step_number": 1,
-                        "title": "Plan and Research",
-                        "description": f"Research and plan for: {goal}",
-                        "estimated_time": "2 hours"
+                        "step_number": step_num,
+                        "title": "Research and Planning",
+                        "description": f"Research best options and create detailed plan for: {goal}",
+                        "estimated_time": "2 hours",
+                        "day": day
+                    },
+                    {
+                        "step_number": step_num + 1,
+                        "title": "Initial Setup/Preparation",
+                        "description": f"Prepare necessary materials and setup for: {goal}",
+                        "estimated_time": "1.5 hours",
+                        "day": day
                     }
-                ],
-                "total_duration": "1 day"
-            }
+                ])
+                step_num += 2
+            else:
+                steps.append({
+                    "step_number": step_num,
+                    "title": f"Day {day} Activities",
+                    "description": f"Continue with planned activities for: {goal}",
+                    "estimated_time": "4 hours",
+                    "day": day
+                })
+                step_num += 1
+        
+        return {
+            "days_count": days_count,
+            "steps": steps,
+            "total_duration": f"{days_count} days"
+        }
     
     def _enrich_with_web_search(self, steps_data: List[Dict], goal: str) -> List[PlanStep]:
         """Enrich plan steps with web search information"""
         enriched_steps = []
+        
+        if not self.web_search:
+            # Return steps without web search enrichment
+            for step_data in steps_data:
+                step = PlanStep(
+                    step_number=step_data["step_number"],
+                    title=step_data["title"],
+                    description=step_data["description"],
+                    estimated_time=step_data["estimated_time"],
+                    day=step_data.get("day", 1)
+                )
+                enriched_steps.append(step)
+            return enriched_steps
         
         # General search for the goal
         search_results = self.web_search.search(goal)
@@ -336,7 +426,8 @@ class TaskPlanningAgent:
                 step_number=step_data["step_number"],
                 title=step_data["title"],
                 description=step_data["description"],
-                estimated_time=step_data["estimated_time"]
+                estimated_time=step_data["estimated_time"],
+                day=step_data.get("day", 1)
             )
             
             # Search for specific information related to this step
@@ -344,31 +435,74 @@ class TaskPlanningAgent:
             step_results = self.web_search.search(step_query, num_results=3)
             
             if step_results:
+                # Extract useful information from search results
+                relevant_info = []
+                for result in step_results[:2]:
+                    snippet = result.get("snippet", "")
+                    if snippet:
+                        # Clean and format the snippet
+                        clean_snippet = snippet.replace("\n", " ").strip()
+                        if len(clean_snippet) > 100:
+                            clean_snippet = clean_snippet[:100] + "..."
+                        relevant_info.append(clean_snippet)
+                
                 step.external_info = {
-                    "search_results": step_results[:2],  # Keep top 2 results
-                    "relevant_info": [result["snippet"] for result in step_results[:2]]
+                    "search_results": step_results[:2],
+                    "relevant_info": relevant_info
                 }
             
             enriched_steps.append(step)
         
         return enriched_steps
     
-    def _get_weather_info(self, goal: str) -> Optional[Dict]:
+    def _get_weather_info(self, goal: str, days_count: int) -> Optional[Dict]:
         """Extract location from goal and get weather information"""
-        # Simple location extraction (can be improved with NER)
-        common_cities = [
-            "jaipur", "hyderabad", "vizag", "visakhapatnam", "mumbai", "delhi",
-            "bangalore", "chennai", "kolkata", "pune", "goa", "udaipur",
-            "kerala", "rajasthan", "goa"
+        if not self.weather:
+            return None
+            
+        # Enhanced location extraction
+        indian_cities = [
+            "mumbai", "delhi", "bangalore", "bengaluru", "hyderabad", "chennai", 
+            "kolkata", "pune", "ahmedabad", "jaipur", "surat", "lucknow",
+            "kanpur", "nagpur", "indore", "thane", "bhopal", "visakhapatnam",
+            "vizag", "pimpri", "patna", "vadodara", "ghaziabad", "ludhiana",
+            "agra", "nashik", "faridabad", "meerut", "rajkot", "kalyan",
+            "vasai", "varanasi", "srinagar", "aurangabad", "dhanbad",
+            "amritsar", "navi mumbai", "allahabad", "prayagraj", "ranchi",
+            "howrah", "coimbatore", "jabalpur", "gwalior", "vijayawada",
+            "jodhpur", "madurai", "raipur", "kota", "guwahati", "chandigarh",
+            "solapur", "hubli", "dharwad", "bareilly", "moradabad", "mysore",
+            "mysuru", "gurgaon", "gurugram", "aligarh", "jalandhar", "tiruchirappalli",
+            "bhubaneswar", "salem", "warangal", "mira", "bhayandar", "thiruvananthapuram",
+            "bhiwandi", "saharanpur", "gorakhpur", "guntur", "bikaner", "amravati",
+            "noida", "jamshedpur", "bhilai", "cuttack", "firozabad", "kochi",
+            "nellore", "bhavnagar", "dehradun", "durgapur", "asansol", "rourkela",
+            "nanded", "kolhapur", "ajmer", "akola", "gulbarga", "jamnagar",
+            "ujjain", "loni", "siliguri", "jhansi", "ulhasnagar", "jammu",
+            "sangli", "miraj", "kupwad", "belgaum", "mangalore", "ambattur",
+            "tirunelveli", "malegaon", "gaya", "jalgaon", "udaipur", "maheshtala",
+            "goa", "panaji", "margao", "kerala", "kottayam", "thrissur",
+            "rajasthan", "udaipur", "mount abu", "pushkar", "rishikesh",
+            "haridwar", "shimla", "manali", "dharamshala", "mcleodganj",
+            "kasauli", "mussoorie", "nainital", "jim corbett", "corbett",
+            "darjeeling", "gangtok", "shillong", "ooty", "kodaikanal",
+            "munnar", "alleppey", "kumarakom", "hampi", "gokarna", "pondicherry",
+            "puducherry", "mahabalipuram", "kanyakumari", "rameswaram",
+            "agartala", "imphal", "aizawl", "kohima", "itanagar"
         ]
         
         goal_lower = goal.lower()
-        for city in common_cities:
+        detected_city = None
+        
+        for city in indian_cities:
             if city in goal_lower:
-                weather_data = self.weather.get_weather(city)
-                if "error" not in weather_data:
-                    return weather_data
+                detected_city = city
                 break
+        
+        if detected_city:
+            weather_data = self.weather.get_weather(detected_city, days=days_count)
+            if "error" not in weather_data:
+                return {**weather_data, "location": detected_city.title()}
         
         return None
     
@@ -379,6 +513,34 @@ class TaskPlanningAgent:
     def get_plan_by_id(self, plan_id: int) -> Optional[Plan]:
         """Get a specific plan by ID"""
         return self.db.get_plan(plan_id)
+    
+    def format_plan_display(self, plan: Plan) -> str:
+        """Format plan for display with day-by-day structure"""
+        output = []
+        
+        # Group steps by day
+        steps_by_day = {}
+        for step in plan.steps:
+            day = step.day
+            if day not in steps_by_day:
+                steps_by_day[day] = []
+            steps_by_day[day].append(step)
+        
+        # Format each day
+        for day in sorted(steps_by_day.keys()):
+            output.append(f"Day {day}:")
+            
+            for step in steps_by_day[day]:
+                output.append(f"{step.step_number}. {step.title} ({step.estimated_time})")
+                output.append(f"   - {step.description}")
+                
+                if step.external_info and step.external_info.get('relevant_info'):
+                    for info in step.external_info['relevant_info']:
+                        output.append(f"   - External Info: {info}")
+                
+                output.append("")  # Add blank line
+        
+        return "\n".join(output)
 
 # Flask Web Application
 app = Flask(__name__)
@@ -402,7 +564,8 @@ def create_plan():
         return jsonify({
             "success": True,
             "plan_id": plan.id,
-            "message": "Plan created successfully!"
+            "message": "Plan created successfully!",
+            "formatted_plan": agent.format_plan_display(plan)
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -414,7 +577,8 @@ def view_plan(plan_id):
     if not plan:
         return "Plan not found", 404
     
-    return render_template('plan_detail.html', plan=plan)
+    formatted_plan = agent.format_plan_display(plan)
+    return render_template('plan_detail.html', plan=plan, formatted_plan=formatted_plan)
 
 @app.route('/api/plans')
 def api_plans():
@@ -429,11 +593,12 @@ def api_plan_detail(plan_id):
     if not plan:
         return jsonify({"error": "Plan not found"}), 404
     
-    return jsonify(asdict(plan))
+    return jsonify({
+        **asdict(plan),
+        "formatted_display": agent.format_plan_display(plan)
+    })
 
 if __name__ == '__main__':
-    
-    
     print("Starting AI Task Planning Agent...")
     print("\n Server starting at http://localhost:5000")
     
