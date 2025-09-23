@@ -49,17 +49,28 @@ architecture:
   ```bash
 git clone <repository-url>
 cd task-planning-agent
-      - "Activate the virtual environment:"
-        windows: "venv\\Scripts\\activate"
-        mac_linux: "source venv/bin/activate"
-      - "Install dependencies: pip install -r requirements.txt"
-      - "Create a .env file with your API keys:"
-        content: |
-          OPENAI_API_KEY=your-openai-key
-          SERPAPI_KEY=your-serpapi-key
-          WEATHER_API_KEY=your-openweather-key
-      - "Run the application: python app.py"
-      - "Access the web interface: http://localhost:5000"
+```
+2. **Create virtual environment:**
+```bash
+python -m venv venv
+venv\Scripts\activate  #on windows
+```
+3. **Install dependencies:**
+```bash
+pip install -r requirements.txt
+```
+4. **create a .env file:**
+```bash
+OPENAI_API_KEY=openai-key-here
+SERPAPI_KEY=serpapi-key-here
+WEATHER_API_KEY=yopenweather-key-here
+```
+5. **Run the application:**
+```bash
+python app.py
+```
+6. **Access the web interface: Open your browser and go to**
+http://localhost:5000
 
 features:
   - "Converts natural language goals into structured actionable plans."
