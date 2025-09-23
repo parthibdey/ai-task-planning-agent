@@ -38,6 +38,18 @@ Task Planning Agent
 SQLite Database (Plans)
 
 
+Web Interface (HTML/JS) 
+        ↓
+   Flask Application
+        ↓
+AI Task Planning Agent
+        ↓
+    Task Planner
+        ↓
+APIs (Search, Weather, SerpAPI, OpenWeatherMap) & SQLite DB
+        ↓
+   Web Plans Storage
+
 
 How It Works
 
