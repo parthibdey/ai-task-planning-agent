@@ -102,6 +102,8 @@ Generated Plan:
 📅 Total Duration: 2 days
 🌤️ Weather: 28°C, partly cloudy
 
+<img width="1324" height="877" alt="image" src="https://github.com/user-attachments/assets/0239478e-fcfd-49cb-b2f8-5536b1373d63" />
+
 Day 1:
 1. Morning Food Market Visit (2 hours)
    - Visit Begum Bazaar for traditional ingredients
