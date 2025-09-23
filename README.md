@@ -94,54 +94,37 @@ http://localhost:5000
 
 
 
-📋 Example Goals and Generated Plans
+## Example Goals and Generated Plans
 
-Example 1: "Plan a 2-day vegetarian food tour in Hyderabad"
-Generated Plan:
-🎯 Goal: Plan a 2-day vegetarian food tour in Hyderabad
-📅 Total Duration: 2 days
-🌤️ Weather: 28°C, partly cloudy
+**Example 1: "Plan a 2-day vegetarian food tour in Hyderabad"**
 
-<img width="1324" height="877" alt="image" src="https://github.com/user-attachments/assets/0239478e-fcfd-49cb-b2f8-5536b1373d63" />
+*Goal: Plan a 2-day vegetarian food tour in Hyderabad*
 
-Day 1:
-1. Morning Food Market Visit (2 hours)
-   - Visit Begum Bazaar for traditional ingredients
-   - External Info: Famous for spices, dry fruits, and local produce
-   
-2. Traditional South Indian Breakfast (1.5 hours)
-   - Try dosa, idli, and vada at Chutneys Restaurant
-   - External Info: Award-winning restaurant known for authentic flavors
+*Generated Plan:*
 
-3. Afternoon Heritage Food Walk (3 hours)
-   - Explore Old City food lanes
-   - External Info: Historic area with 400-year-old food traditions
 
-4. Dinner at Vegetarian Fine Dining (2 hours)
-   - Experience modern take on traditional cuisine
-   - External Info: Innovative restaurants like Ohri's offer fusion vegetarian
+<img width="1345" height="883" alt="image" src="https://github.com/user-attachments/assets/63e8d2d1-eb5d-4bd6-ba50-1a8f70ed5160" />
 
-Day 2:
-5. Street Food Tour - Charminar Area (2.5 hours)
-   - Sample local street snacks and sweets
-   - External Info: Famous for haleem, biryani alternatives, and sweets
+<img width="1342" height="896" alt="image" src="https://github.com/user-attachments/assets/04bf0263-2e81-4009-a668-4432ce263942" />
 
-6. Cooking Class Experience (3 hours)
-   - Learn to prepare Hyderabadi vegetarian dishes
-   - External Info: Several institutes offer hands-on cooking experiences
+<img width="1339" height="865" alt="image" src="https://github.com/user-attachments/assets/dec1ac8a-411d-405c-8ec1-4af326695f34" />
 
-Example 2: "Organize a 5-step daily study routine for learning Python"
-Generated Plan:
-🎯 Goal: Organize a 5-step daily study routine for learning Python
-📅 Total Duration: Ongoing (daily routine)
+<img width="1492" height="947" alt="image" src="https://github.com/user-attachments/assets/1c05ca0b-98ca-4f7d-ae41-9999e85ba114" />
 
-Daily Routine:
-1. Morning Theory Study (45 minutes)
-   - Read Python concepts and documentation
-   - External Info: Python.org official tutorial recommended for beginners
-   
-2. Interactive Coding Practice (60 minutes)
-   - Work on coding exercises and challenges
-   - External Info: Platforms like HackerRank and LeetCode offer Python problems
 
-3. Project-Based Learning (90 minutes)
+
+**Example 2: "Organize a 5-step daily study routine for learning Python"**
+
+*Generated Plan:*
+
+*Goal: Organize a 5-step daily study routine for learning Python*
+
+
+<img width="1499" height="938" alt="image" src="https://github.com/user-attachments/assets/ac78488e-f5b2-4953-94bf-a30948cef67b" />
+
+<img width="1576" height="954" alt="image" src="https://github.com/user-attachments/assets/1f83b631-8949-47d3-afb5-dacd1967fef9" />
+
+<img width="1562" height="935" alt="image" src="https://github.com/user-attachments/assets/075bee51-bd2e-4fb5-b65f-f9e1649145f5" />
+
+
+
