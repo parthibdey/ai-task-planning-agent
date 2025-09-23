@@ -2,54 +2,7 @@ AI Task Planning Agent
 An intelligent agent that helps with task planning by breaking down natural language goals into actionable steps, enriching them with external information, and providing a clear day-by-day plan.
 
 Architecture Overview
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Web Interface │ ── │ Flask Application│ ── │ Task Planning   │
-│   (HTML/JS)     │    │                  │    │ Agent (Core)    │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                                         │
-                        ┌────────────────────────────────┼─────────────────┐
-                        │                                │                 │
-                ┌───────▼────────┐              ┌───────▼───────┐  ┌──────▼──────┐
-                │ Web Search API │              │ Weather API   │  │ SQLite DB   │
-                │  (SerpAPI)     │              │(OpenWeatherMap│  │ (Plans      │
-                └────────────────┘              └───────────────┘  │ Storage)    │
-                                                                   └─────────────┘
-AI Task Planning Agent
----------------------
-
-User Goal Input
-      │
-      ▼
-Web Interface (HTML/JS)
-      │
-      ▼
-Flask Application
-  - Routes
-  - Handles API Requests
-      │
-      ▼
-Task Planning Agent
-  - Generate Plan (OpenAI GPT)
-  - Enrich Steps (SerpAPI)
-  - Get Weather Info (OpenWeatherMap)
-  - Save Plan to DB
-      │
-      ▼
-SQLite Database (Plans)
-
-
-Web Interface (HTML/JS) 
-        ↓
-   Flask Application
-        ↓
-AI Task Planning Agent
-        ↓
-    Task Planner
-        ↓
-APIs (Search, Weather, SerpAPI, OpenWeatherMap) & SQLite DB
-        ↓
-   Web Plans Storage
-
+Web Interface (HTML/JS) → Flask App → AI Task Planning Agent → Task Planner → APIs & SQLite DB → Web Plans Storage
 
 How It Works
 
