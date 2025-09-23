@@ -46,8 +46,9 @@ architecture:
 ### Installation
 
 1. **Clone the repository**  
-  git clone <repository-url>
-  cd task-planning-agent
+  ```bash
+git clone <repository-url>
+cd task-planning-agent
       - "Activate the virtual environment:"
         windows: "venv\\Scripts\\activate"
         mac_linux: "source venv/bin/activate"
