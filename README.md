@@ -15,6 +15,8 @@ Architecture Overview
                 └────────────────┘              └───────────────┘  │ Storage)    │
                                                                    └─────────────┘
 
+
+
 How It Works
 
 Goal Input: User enters a natural language goal
