@@ -27,16 +27,15 @@ Plan is saved to SQLite database for future reference.
 7)Web Display:
 Plan is presented in a user-friendly web interface.
 
-Setup Instructions
-Prerequisites
+## Setup Instructions
 
-Python 3.8 or higher
-API Keys for:
+### Prerequisites
 
-OpenAI API
-SerpAPI (for web search)
-OpenWeatherMap API
-
+- Python 3.8 or higher
+- API Keys for:
+  - OpenAI API
+  - SerpAPI (for web search)
+  - OpenWeatherMap API
 
 
 Installation
