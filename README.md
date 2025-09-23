@@ -16,6 +16,43 @@ Architecture Overview
                                                                    └─────────────┘
 
 
+┌─────────────────┐
+│   Web Interface │
+│   (HTML/JS)     │
+│  - Input goal   │
+│  - View plans   │
+└────────┬────────┘
+         │ HTTP request (POST / GET)
+         ▼
+┌─────────────────┐
+│  Flask App      │
+│  - Handles routes│
+│  - Calls Agent   │
+└────────┬────────┘
+         │ Calls
+         ▼
+┌─────────────────────────────┐
+│ Task Planning Agent         │
+│  - Generate initial plan    │
+│    (OpenAI API)             │
+│  - Enrich steps             │
+│    (SerpAPI Web Search)     │
+│  - Fetch weather info       │
+│    (OpenWeatherMap API)     │
+│  - Save plan to DB          │
+└───────┬─────────┬───────────┘
+        │         │
+        │         │
+        │         │
+ ┌──────▼─────┐  ┌▼─────────────┐
+ │ SQLite DB  │  │ External APIs│
+ │ (Plans)    │  │  - SerpAPI  │
+ │            │  │  - Weather  │
+ └────────────┘  └─────────────┘
+
+
+
+
 
 How It Works
 
