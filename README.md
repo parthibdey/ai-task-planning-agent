@@ -8,23 +8,46 @@ description: >
 architecture:
   overview: "Web Interface (HTML/JS) → Flask App → AI Task Planning Agent → Task Planner → APIs & SQLite DB → Web Plans Storage"
 
-how_it_works:
-  - goal_input: "User enters a natural language goal."
-  - initial_planning: "LLM (GPT-3.5) breaks down the goal into structured steps."
-  - web_enrichment: "Each step is enriched with relevant web search results."
-  - weather_integration: "Location-based goals receive weather forecasts."
-  - plan_generation: "Complete plan is assembled with all information."
-  - database_storage: "Plan is saved to SQLite database for future reference."
-  - web_display: "Plan is presented in a user-friendly web interface."
+## How It Works
 
-setup_instructions:
-  prerequisites:
-    - "Python 3.8 or higher"
-    - "API Keys for OpenAI API, SerpAPI, and OpenWeatherMap API"
-  installation:
-    steps:
-      - "Clone the repository: git clone <repository-url> && cd task-planning-agent"
-      - "Create a virtual environment: python -m venv venv"
+1. **Goal Input:**  
+   User enters a natural language goal.
+
+2. **Initial Planning:**  
+   LLM (GPT-3.5) breaks down the goal into structured steps.
+
+3. **Web Enrichment:**  
+   Each step is enriched with relevant web search results.
+
+4. **Weather Integration:**  
+   Location-based goals receive weather forecasts.
+
+5. **Plan Generation:**  
+   Complete plan is assembled with all information.
+
+6. **Database Storage:**  
+   Plan is saved to SQLite database for future reference.
+
+7. **Web Display:**  
+   Plan is presented in a user-friendly web interface.
+
+---
+
+## Setup Instructions
+
+### Prerequisites
+
+- Python 3.8 or higher  
+- API Keys for:  
+  - OpenAI API  
+  - SerpAPI (for web search)  
+  - OpenWeatherMap API  
+
+### Installation
+
+1. **Clone the repository**  
+  git clone <repository-url>
+  cd task-planning-agent
       - "Activate the virtual environment:"
         windows: "venv\\Scripts\\activate"
         mac_linux: "source venv/bin/activate"
