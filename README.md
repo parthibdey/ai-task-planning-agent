@@ -6,19 +6,26 @@ Web Interface (HTML/JS) → Flask App → AI Task Planning Agent → Task Planne
 
 How It Works
 
-Goal Input: User enters a natural language goal
+1)Goal Input:
+User enters a natural language goal.
 
-Initial Planning: LLM (GPT-3.5) breaks down the goal into structured steps
+2)Initial Planning:
+LLM (GPT-3.5) breaks down the goal into structured steps.
 
-Web Enrichment: Each step is enriched with relevant web search results
+3)Web Enrichment:
+Each step is enriched with relevant web search results.
 
-Weather Integration: Location-based goals get weather forecasts
+4)Weather Integration:
+Location-based goals receive weather forecasts.
 
-Plan Generation: Complete plan is assembled with all information
+5)Plan Generation:
+Complete plan is assembled with all information.
 
-Database Storage: Plan is saved to SQLite database for future reference
+6)Database Storage:
+Plan is saved to SQLite database for future reference.
 
-Web Display: Plan is presented in a user-friendly web interface
+7)Web Display:
+Plan is presented in a user-friendly web interface.
 
 Setup Instructions
 Prerequisites
