@@ -6,7 +6,7 @@ An intelligent agent that helps with **task planning** by breaking down natural 
 ---
 
 ## Architecture Overview
-  overview: "Web Interface (HTML/JS) → Flask App → AI Task Planning Agent → Task Planner → APIs & SQLite DB → Web Plans Storage"
+Web Interface (HTML/JS) → Flask App → AI Task Planning Agent → Task Planner → APIs & SQLite DB → Web Plans Storage
 
 ## How It Works
 
