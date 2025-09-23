@@ -14,44 +14,41 @@ Architecture Overview
                 │  (SerpAPI)     │              │(OpenWeatherMap│  │ (Plans      │
                 └────────────────┘              └───────────────┘  │ Storage)    │
                                                                    └─────────────┘
+AI Task Planning Agent
+---------------------
 
-
-┌─────────────────┐
-│   Web Interface │
-│   (HTML/JS)     │
-│  - Input goal   │
-│  - View plans   │
-└────────┬────────┘
-         │ HTTP request (POST / GET)
-         ▼
-┌─────────────────┐
-│  Flask App      │
-│  - Handles routes│
-│  - Calls Agent   │
-└────────┬────────┘
-         │ Calls
-         ▼
-┌─────────────────────────────┐
-│ Task Planning Agent         │
-│  - Generate initial plan    │
-│    (OpenAI API)             │
-│  - Enrich steps             │
-│    (SerpAPI Web Search)     │
-│  - Fetch weather info       │
-│    (OpenWeatherMap API)     │
-│  - Save plan to DB          │
-└───────┬─────────┬───────────┘
-        │         │
-        │         │
-        │         │
- ┌──────▼─────┐  ┌▼─────────────┐
- │ SQLite DB  │  │ External APIs│
- │ (Plans)    │  │  - SerpAPI  │
- │            │  │  - Weather  │
- └────────────┘  └─────────────┘
-
-
-
+User Goal Input
+      │
+      ▼
+┌───────────────┐
+│   Web Interface│
+│   (HTML/JS)    │
+└───────────────┘
+      │
+      ▼
+┌───────────────┐
+│  Flask App    │
+│  - Routes     │
+│  - Handles API│
+└───────────────┘
+      │
+      ▼
+┌────────────────────┐
+│ Task Planning Agent │
+│ - Generate Plan     │
+│   (OpenAI GPT)      │
+│ - Enrich Steps      │
+│   (SerpAPI)         │
+│ - Weather Info      │
+│   (OpenWeatherMap)  │
+│ - Save to DB        │
+└────────────────────┘
+      │
+      ▼
+┌───────────────┐
+│  SQLite DB    │
+│  (Plans)      │
+└───────────────┘
 
 
 How It Works
