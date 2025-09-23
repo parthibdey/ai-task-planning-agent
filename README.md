@@ -20,35 +20,23 @@ AI Task Planning Agent
 User Goal Input
       │
       ▼
-┌───────────────┐
-│   Web Interface│
-│   (HTML/JS)    │
-└───────────────┘
+Web Interface (HTML/JS)
       │
       ▼
-┌───────────────┐
-│  Flask App    │
-│  - Routes     │
-│  - Handles API│
-└───────────────┘
+Flask Application
+  - Routes
+  - Handles API Requests
       │
       ▼
-┌────────────────────┐
-│ Task Planning Agent │
-│ - Generate Plan     │
-│   (OpenAI GPT)      │
-│ - Enrich Steps      │
-│   (SerpAPI)         │
-│ - Weather Info      │
-│   (OpenWeatherMap)  │
-│ - Save to DB        │
-└────────────────────┘
+Task Planning Agent
+  - Generate Plan (OpenAI GPT)
+  - Enrich Steps (SerpAPI)
+  - Get Weather Info (OpenWeatherMap)
+  - Save Plan to DB
       │
       ▼
-┌───────────────┐
-│  SQLite DB    │
-│  (Plans)      │
-└───────────────┘
+SQLite Database (Plans)
+
 
 
 How It Works
