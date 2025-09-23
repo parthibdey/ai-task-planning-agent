@@ -57,9 +57,9 @@ pip install -r requirements.txt
 
 4) Create a .env file:
 
-OPENAI_API_KEY=your-openai-key-here
-SERPAPI_KEY=your-serpapi-key-here
-WEATHER_API_KEY=your-openweather-key-here
+OPENAI_API_KEY=openai-key-here
+SERPAPI_KEY=serpapi-key-here
+WEATHER_API_KEY=openweather-key-here
 
 5) Run the application:
 
@@ -70,6 +70,7 @@ http://localhost:5000
 
 
 📋 Example Goals and Generated Plans
+
 Example 1: "Plan a 2-day vegetarian food tour in Hyderabad"
 Generated Plan:
 🎯 Goal: Plan a 2-day vegetarian food tour in Hyderabad
