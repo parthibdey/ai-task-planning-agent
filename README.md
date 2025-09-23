@@ -1,11 +1,11 @@
-AI Task Planning Agent
+# AI Task Planning Agent
 
-description: >
-    An intelligent agent that helps with task planning by breaking down natural language goals
-    into actionable steps, enriching them with external information, and providing a clear
-    day-by-day plan.
+**Description:**  
+An intelligent agent that helps with **task planning** by breaking down natural language goals into actionable steps, enriching them with external information, and providing a clear day-by-day plan.
 
-architecture:
+---
+
+## Architecture Overview
   overview: "Web Interface (HTML/JS) → Flask App → AI Task Planning Agent → Task Planner → APIs & SQLite DB → Web Plans Storage"
 
 ## How It Works
@@ -72,23 +72,27 @@ python app.py
 6. **Access the web interface: Open your browser and go to**
 http://localhost:5000
 
-features:
-  - "Converts natural language goals into structured actionable plans."
-  - "Enriches each step with web search results and external information."
-  - "Integrates weather data for location-specific goals."
-  - "Stores generated plans in a SQLite database."
-  - "Presents plans in a clean and user-friendly web interface."
+## Features
 
-technologies:
-  - "Python 3.8+"
-  - "Flask"
-  - "OpenAI GPT-3.5"
-  - "SerpAPI"
-  - "OpenWeatherMap API"
-  - "SQLite"
-  - "HTML/CSS/JavaScript"
+- Converts natural language goals into structured actionable plans.  
+- Enriches each step with web search results and external information.  
+- Integrates weather data for location-specific goals.  
+- Stores generated plans in a SQLite database.  
+- Presents plans in a clean and user-friendly web interface.  
 
-license: "MIT"
+---
+
+## Technologies Used
+
+- Python 3.8+  
+- Flask  
+- OpenAI GPT-3.5  
+- SerpAPI  
+- OpenWeatherMap API  
+- SQLite  
+- HTML/CSS/JavaScript  
+
+
 
 📋 Example Goals and Generated Plans
 
