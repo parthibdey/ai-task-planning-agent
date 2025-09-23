@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Details - AI Task Planning Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/plan.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to All Plans</a>
+        
+        <div class="header">
+            <h1>Plan Details</h1>
+        </div>
+
+        <div class="plan-container">
+            <div class="plan-meta">
+                <h2>{{ plan.goal }}</h2>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <div class="meta-label">Created</div>
+                        <div class="meta-value">{{ plan.created_at[:19].replace('T', ' ') }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Total Duration</div>
+                        <div class="meta-value">{{ plan.total_duration }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Number of Steps</div>
+                        <div class="meta-value">{{ plan.steps|length }}</div>
+                    </div>
+                </div>
+            </div>
+
+            {% if plan.weather_info %}
+            <div class="weather-info">
+                <h3>Weather Information</h3>
+                {% if plan.weather_info.current %}
+                <div class="weather-current">
+                    <strong>Current Weather:</strong> 
+                    {{ plan.weather_info.current.temperature }}°C, 
+                    {{ plan.weather_info.current.description|title }}
+                    {% if plan.weather_info.current.humidity %}
+                    (Humidity: {{ plan.weather_info.current.humidity }}%)
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                {% if plan.weather_info.forecast %}
+                <div class="weather-forecast">
+                    {% for day in plan.weather_info.forecast[:3] %}
+                    <div class="forecast-day">
+                        <div><strong>{{ day.date }}</strong></div>
+                        <div>{{ day.min_temp }}° - {{ day.max_temp }}°C</div>
+                        <div>{{ day.description|title }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <h3 class="steps-header">Step-by-Step Plan</h3>
+            {% for step in plan.steps %}
+            <div class="step">
+                <h3>
+                    <span class="step-title">{{ step.step_number }}. {{ step.title }}</span>
+                    <span class="badge">{{ step.estimated_time }}</span>
+                </h3>
+                <div class="step-description">{{ step.description }}</div>
+                
+                {% if step.external_info and step.external_info.relevant_info %}
+                <div class="external-info">
+                    <strong>Additional Information:</strong>
+                    {% for info in step.external_info.relevant_info %}
+                        <p>• {{ info }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="create-another">
+            <a href="/" class="back-link">Create Another Plan</a>
+        </div>
+    </div>
+</body>
+</html>

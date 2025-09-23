@@ -1,0 +1,97 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Task Planning Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI Task Planning Agent</h1>
+            <p>Enter your goal and get a detailed, actionable plan powered by AI!</p>
+        </div>
+
+        <div class="form-container">
+            <form id="planForm">
+                <div class="form-group">
+                    <label for="goal">What would you like to plan?</label>
+                    <input type="text" id="goal" name="goal" 
+                           placeholder="e.g., Plan a 3-day trip to Jaipur with cultural highlights and good food" 
+                           required>
+                </div>
+                <button type="submit" id="submitBtn">Create Plan</button>
+                <div id="message"></div>
+            </form>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                Creating your personalized plan... This may take a few moments.
+            </div>
+        </div>
+
+        <div class="plans-list">
+            <h2>Previous Plans</h2>
+            {% if plans %}
+                {% for plan in plans %}
+                <div class="plan-item">
+                    <h3><a href="/plan/{{ plan.id }}">{{ plan.goal }}</a></h3>
+                    <div class="plan-meta">
+                        <span>Created: {{ plan.created_at[:19].replace('T', ' ') }}</span>
+                        <span>Duration: {{ plan.total_duration }}</span>
+                        <span>Steps: {{ plan.steps|length }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>No plans created yet. Create your first plan above!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('planForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const goal = document.getElementById('goal').value;
+            const messageDiv = document.getElementById('message');
+            const loadingDiv = document.getElementById('loading');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Show loading state
+            loadingDiv.style.display = 'block';
+            messageDiv.innerHTML = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Plan...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('goal', goal);
+                
+                const response = await fetch('/create_plan', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success">✅ ' + result.message + ' Redirecting...</div>';
+                    setTimeout(() => {
+                        window.location.href = '/plan/' + result.plan_id;
+                    }, 1500);
+                } else {
+                    messageDiv.innerHTML = '<div class="error">❌ ' + (result.error || 'Unknown error') + '</div>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
+            } finally {
+                loadingDiv.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Plan';
+            }
+        });
+    </script>
+</body>
+</html>

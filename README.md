@@ -99,6 +99,7 @@ Day 2:
 6. Cooking Class Experience (3 hours)
    - Learn to prepare Hyderabadi vegetarian dishes
    - External Info: Several institutes offer hands-on cooking experiences
+
 Example 2: "Organize a 5-step daily study routine for learning Python"
 Generated Plan:
 🎯 Goal: Organize a 5-step daily study routine for learning Python
