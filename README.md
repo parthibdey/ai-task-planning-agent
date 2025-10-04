@@ -47,7 +47,7 @@ Web Interface (HTML/JS) → Flask App → AI Task Planning Agent → Task Planne
 
 1. **Clone the repository**  
   ```bash
-git clone <repository-url>
+git clone https://github.com/parthibdey/ai-task-planning-agent.git
 cd task-planning-agent
 ```
 2. **Create virtual environment:**
